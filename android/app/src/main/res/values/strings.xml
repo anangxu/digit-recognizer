@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">手写数字识别</string>
+    <string name="result_label">识别结果</string>
+    <string name="hint_text">将数字放入取景框内</string>
+    <string name="btn_capture">拍照确认</string>
+    <string name="btn_retry">重新识别</string>
+    <string name="confidence_format">置信度: %.1f%%</string>
+    <string name="permission_denied">需要摄像头权限才能使用本应用</string>
+    <string name="permission_rationale">本应用需要摄像头权限以实时识别手写数字</string>
+    <string name="grant_permission">授予权限</string>
+    <string name="waiting">等待中...</string>
+    <string name="loading_model">加载模型中...</string>
+</resources>

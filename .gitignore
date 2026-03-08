@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+train/data/
+train/*.pth
+train/digit_model.ptl
+train/training_curves.png
+train/sample_digits/
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.iml
+android/.idea/
+android/app/src/main/assets/digit_model.ptl
+
+# 系统文件
+.DS_Store
+Thumbs.db
