@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -139,6 +140,10 @@ class MainActivity : AppCompatActivity() {
             // 开始定时推理
             mainHandler.post(inferenceRunnable)
 
+            // 启动扫描线动画
+            val scanAnim = AnimationUtils.loadAnimation(this, R.anim.scan_line)
+            binding.scanLine.startAnimation(scanAnim)
+
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -242,14 +247,23 @@ class MainActivity : AppCompatActivity() {
         return Rect(left, top, left + side, top + side)
     }
 
+    private var lastDisplayedDigit: Int = -1
+
     private fun updateResultUI(result: DigitClassifier.Result?) {
         if (result == null) {
             binding.tvDigit.text = "?"
             binding.tvConfidence.text = "识别失败"
             return
         }
+        // 数字切换时才触发入场动画
+        if (result.digit != lastDisplayedDigit) {
+            val anim = AnimationUtils.loadAnimation(this, R.anim.digit_enter)
+            binding.tvDigit.startAnimation(anim)
+            lastDisplayedDigit = result.digit
+        }
         binding.tvDigit.text = result.digit.toString()
         binding.tvConfidence.text = getString(R.string.confidence_format, result.confidence)
+        binding.confidenceBarView.setScores(result.allScores, result.digit)
     }
 
     // ──────────────────────────────────────────────
@@ -263,9 +277,17 @@ class MainActivity : AppCompatActivity() {
             binding.frozenFrame.setImageBitmap(null)
             binding.btnCapture.text = getString(R.string.btn_capture)
             binding.tvHint.text = getString(R.string.hint_text)
+            // 恢复扫描线动画
+            val scanAnim = AnimationUtils.loadAnimation(this, R.anim.scan_line)
+            binding.scanLine.startAnimation(scanAnim)
+            binding.scanLine.visibility = View.VISIBLE
         } else {
             val bitmap = latestBitmap ?: return
             val cls = classifier ?: return
+
+            // 停止扫描线
+            binding.scanLine.clearAnimation()
+            binding.scanLine.visibility = View.INVISIBLE
 
             // 显示冻结帧覆盖在预览上，视觉上"暂停"摄像头
             val frozenBmp = bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, false)

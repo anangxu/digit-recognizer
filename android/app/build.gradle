@@ -36,12 +36,13 @@ android {
     buildFeatures {
         viewBinding true
     }
+    packagingOptions {
+        resources {
+            pickFirsts += ['META-INF/LICENSE.md', 'META-INF/LICENSE-notice.md']
+        }
+    }
 
     // 打包时排除 PyTorch 重复的 META-INF 文件
-    packagingOptions {
-        pickFirst 'META-INF/LICENSE.md'
-        pickFirst 'META-INF/LICENSE-notice.md'
-    }
 }
 
 dependencies {
@@ -59,8 +60,8 @@ dependencies {
     implementation "androidx.camera:camera-view:$camerax_version"
 
     // PyTorch Mobile Lite
-    implementation 'org.pytorch:pytorch_android_lite:1.13.1'
-    implementation 'org.pytorch:pytorch_android_torchvision_lite:1.13.1'
+    implementation 'org.pytorch:pytorch_android_lite:2.1.0'
+    implementation 'org.pytorch:pytorch_android_torchvision_lite:2.1.0'
 
     // Activity / Lifecycle
     implementation 'androidx.activity:activity-ktx:1.8.2'

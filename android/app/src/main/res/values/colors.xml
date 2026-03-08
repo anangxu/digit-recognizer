@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- base -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- 主品牌色：霓虹青 -->
+    <color name="neon_cyan">#FF00E5FF</color>
+    <color name="neon_cyan_dark">#FF00B8D4</color>
+    <!-- 强调色：霓虹紫 -->
+    <color name="neon_purple">#FFAA00FF</color>
+    <!-- 背景 -->
+    <color name="bg_dark">#FF090E1A</color>
+    <color name="bg_card">#DD0D1626</color>
+    <!-- 取景框边框（直接写十六进制） -->
+    <color name="viewfinder_border">#FF00E5FF</color>
+    <!-- 数字大字颜色 -->
+    <color name="digit_text">#FF00E5FF</color>
+    <!-- 扫描线 -->
+    <color name="scan_line">#8000E5FF</color>
+    <!-- 置信度条 -->
+    <color name="bar_low">#FF37474F</color>
+    <color name="bar_high">#FF00E5FF</color>
+    <!-- result card背景 -->
+    <color name="result_bg">#DD0D1626</color>
+    <!-- 其他（向后兼容） -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="overlay_dark">#99000000</color>
-    <color name="result_bg">#CC1A1A2E</color>
-    <color name="viewfinder_border">#FFFFFFFF</color>
-    <color name="digit_text">#FFFFD700</color>
 </resources>
