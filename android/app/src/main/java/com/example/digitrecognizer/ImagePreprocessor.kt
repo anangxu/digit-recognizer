@@ -86,28 +86,34 @@ object ImagePreprocessor {
         // 7. 构建二值化 Bitmap（黑底白字）
         val binaryBmp = buildForegroundBitmap(foreground, w, h)
 
-        // 8. 裁剪数字区域（加 padding）
+        // 8. 裁剪数字区域（加 padding，保持原始宽高比）
         val digitBitmap: Bitmap
         if (bbox == null || bbox.width() < 4 || bbox.height() < 4) {
             digitBitmap = binaryBmp
         } else {
-            val padded = squarePadded(bbox, w, h, ratio = 0.25f)
+            val padded = paddedRect(bbox, w, h, ratio = 0.20f)
             digitBitmap = Bitmap.createBitmap(
                 binaryBmp, padded.left, padded.top, padded.width(), padded.height()
             )
             binaryBmp.recycle()
         }
 
-        // 9. 缩放到 DIGIT_SIZE×DIGIT_SIZE（用 NEAREST 保留二值锐度）
-        val scaled = Bitmap.createScaledBitmap(digitBitmap, DIGIT_SIZE, DIGIT_SIZE, false)
+        // 9. 保持宽高比缩放，长边缩放到 DIGIT_SIZE，居中放置到 TARGET_SIZE×TARGET_SIZE 画布
+        val bw = digitBitmap.width.toFloat()
+        val bh = digitBitmap.height.toFloat()
+        val scale = DIGIT_SIZE.toFloat() / maxOf(bw, bh)
+        val scaledW = (bw * scale).toInt().coerceAtLeast(1)
+        val scaledH = (bh * scale).toInt().coerceAtLeast(1)
+        val scaled = Bitmap.createScaledBitmap(digitBitmap, scaledW, scaledH, false)
         digitBitmap.recycle()
 
         // 10. 居中放置到 TARGET_SIZE×TARGET_SIZE 黑色画布（模拟 MNIST 四周留白）
         val result = Bitmap.createBitmap(TARGET_SIZE, TARGET_SIZE, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(result)
         canvas.drawColor(0xFF000000.toInt())
-        val offset = (TARGET_SIZE - DIGIT_SIZE) / 2
-        canvas.drawBitmap(scaled, offset.toFloat(), offset.toFloat(), null)
+        val offsetX = (TARGET_SIZE - scaledW) / 2
+        val offsetY = (TARGET_SIZE - scaledH) / 2
+        canvas.drawBitmap(scaled, offsetX.toFloat(), offsetY.toFloat(), null)
         scaled.recycle()
 
         return result
@@ -307,16 +313,13 @@ object ImagePreprocessor {
         return bmp
     }
 
-    /** bbox 四周加边距并保持正方形，不超出图像边界 */
-    private fun squarePadded(bbox: Rect, w: Int, h: Int, ratio: Float): Rect {
-        val side = maxOf(bbox.width(), bbox.height())
-        val pad  = (side * ratio).toInt().coerceAtLeast(2)
-        var size = (side + pad * 2).coerceAtMost(minOf(w, h)).coerceAtLeast(1)
-
-        val cx = bbox.centerX().coerceIn(size / 2, w - size / 2)
-        val cy = bbox.centerY().coerceIn(size / 2, h - size / 2)
-        val left = (cx - size / 2).coerceIn(0, w - size)
-        val top  = (cy - size / 2).coerceIn(0, h - size)
-        return Rect(left, top, left + size, top + size)
+    /** bbox 四周加边距，不强制正方形，不超出图像边界 */
+    private fun paddedRect(bbox: Rect, w: Int, h: Int, ratio: Float): Rect {
+        val pad = (maxOf(bbox.width(), bbox.height()) * ratio).toInt().coerceAtLeast(2)
+        val left   = (bbox.left   - pad).coerceAtLeast(0)
+        val top    = (bbox.top    - pad).coerceAtLeast(0)
+        val right  = (bbox.right  + pad).coerceAtMost(w)
+        val bottom = (bbox.bottom + pad).coerceAtMost(h)
+        return Rect(left, top, right, bottom)
     }
 }
